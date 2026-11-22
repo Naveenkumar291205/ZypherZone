@@ -12,7 +12,6 @@ import {
   Users,
   HelpCircle,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { useLenisControl } from "./SmoothScrollProvider";
@@ -35,7 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { stop, start, scrollTo } = useLenisControl();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>("");
+  const [activeSection, setActiveSection] = useState<string>("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Sync scroll progress & active sections
@@ -49,8 +48,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       // Section tracking on home page
       if (window.location.pathname === "/") {
-        const sections = ["showcase", "why", "services", "how", "estimator", "portfolio", "contact"];
-        let current = "";
+        const sections = ["home", "about", "services", "projects", "how", "estimator", "team", "contact"];
+        let current = "home";
         for (const sec of sections) {
           const el = document.getElementById(sec);
           if (el) {
@@ -96,7 +95,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
     if (href.startsWith("/#") && window.location.pathname === "/") {
       const targetId = href.replace("/", "");
-      scrollTo(targetId, { offset: -80 });
+      scrollTo(targetId, { offset: -90 });
     }
   };
 
@@ -111,25 +110,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* FLOATING PILL NAVBAR */}
-      <header className="fixed top-3.5 sm:top-5 left-0 right-0 z-50 px-4 sm:px-6 pointer-events-none flex justify-center">
+      <header className="fixed top-3 sm:top-4 left-0 right-0 z-50 px-3 sm:px-6 pointer-events-none flex justify-center">
         <div
-          className={`pointer-events-auto w-full max-w-[1040px] rounded-full transition-all duration-300 border flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3 ${
+          className={`pointer-events-auto w-full max-w-[1020px] rounded-full transition-all duration-300 border flex items-center justify-between px-3.5 sm:px-5 py-2 sm:py-2.5 ${
             isScrolled
               ? "bg-[#0A0A0D]/90 border-white/[0.12] backdrop-blur-2xl shadow-[0_12px_36px_rgba(0,0,0,0.8)]"
               : "bg-[#0C0C0F]/70 border-white/[0.08] backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
           }`}
         >
-          {/* Logo & Brand */}
-          <Link to="/" className="flex items-center gap-2.5 group shrink-0" onClick={() => setMobileMenuOpen(false)}>
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 group shrink-0" onClick={() => setMobileMenuOpen(false)}>
             <Logo />
-            <img
-              src={wordmark}
-              alt="ZyphorZone Wordmark"
-              className="h-4 sm:h-[18px] object-contain transition-opacity duration-300 group-hover:opacity-90"
-            />
+            <span className="font-display font-bold text-base sm:text-lg tracking-tight">
+              <span className="text-[#C8FF00]">Zyphor</span>Zone
+            </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Nav Links */}
           <nav className="hidden lg:flex items-center gap-1">
             {siteConfig.navItems.map((item) => {
               const secId = item.href.replace("/#", "");
@@ -147,9 +144,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       handleNavClick(item.href);
                     }
                   }}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
                     isCurrent
-                      ? "bg-white/[0.08] text-[#C8FF00] shadow-[inset_0_0_1px_rgba(255,255,255,0.2)] font-semibold"
+                      ? "bg-white/[0.08] text-[#C8FF00] font-semibold shadow-sm"
                       : "text-[#9A9AA6] hover:text-[#F5F5F7] hover:bg-white/[0.04]"
                   }`}
                 >
@@ -159,8 +156,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             })}
           </nav>
 
-          {/* Right Action & Mobile Toggle */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right Action Button & Mobile Toggle */}
+          <div className="flex items-center gap-2">
             <a
               href="/#contact"
               onClick={(e) => {
@@ -171,26 +168,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               }}
               className="btn-lime text-xs font-bold !py-2 !px-4 sm:!py-2.5 sm:!px-5 rounded-full inline-flex items-center gap-1.5"
             >
-              <span>Scope Project</span>
+              <span>Book a Call</span>
               <ArrowRight className="h-3 w-3" />
             </a>
 
             {/* Animated 2-line Hamburger (<= 920px) */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden flex flex-col justify-center items-center w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] text-[#F5F5F7] hover:bg-white/[0.08] transition-colors"
-              aria-label="Toggle navigation drawer"
+              className="lg:hidden flex flex-col justify-center items-center w-9 h-9 rounded-full bg-white/[0.04] border border-white/[0.08] text-[#F5F5F7] hover:bg-white/[0.08] transition-colors"
+              aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
-              <div className="w-4 h-3.5 relative flex flex-col justify-between">
+              <div className="w-4 h-3 relative flex flex-col justify-between">
                 <span
                   className={`block h-[1.5px] w-full bg-current rounded-full transition-transform duration-300 origin-center ${
-                    mobileMenuOpen ? "translate-y-[6px] rotate-45" : ""
+                    mobileMenuOpen ? "translate-y-[5px] rotate-45" : ""
                   }`}
                 />
                 <span
                   className={`block h-[1.5px] w-full bg-current rounded-full transition-transform duration-300 origin-center ${
-                    mobileMenuOpen ? "-translate-y-[6px] -rotate-45" : ""
+                    mobileMenuOpen ? "-translate-y-[5px] -rotate-45" : ""
                   }`}
                 />
               </div>
@@ -199,18 +196,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      {/* Mobile Drawer Backdrop & Glass Dropdown */}
+      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 lg:hidden flex flex-col justify-start pt-24 px-4 sm:px-6">
+        <div className="fixed inset-0 z-40 lg:hidden flex flex-col justify-start pt-20 px-4">
           <div
             className="fixed inset-0 bg-[#09090B]/85 backdrop-blur-xl animate-in fade-in duration-200"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
 
-          <div className="relative z-50 w-full max-w-lg mx-auto bg-[#121217]/95 border border-white/[0.12] rounded-3xl p-6 shadow-2xl backdrop-blur-2xl animate-in zoom-in-95 duration-200 space-y-3">
-            <div className="text-[11px] font-mono uppercase tracking-widest text-[#C8FF00] px-3 pb-1 border-b border-white/[0.06]">
-              Navigation
+          <div className="relative z-50 w-full max-w-md mx-auto bg-[#121217]/95 border border-white/[0.12] rounded-3xl p-5 shadow-2xl backdrop-blur-2xl animate-in zoom-in-95 duration-200 space-y-2">
+            <div className="text-[11px] font-mono uppercase tracking-widest text-[#C8FF00] px-3 pb-2 border-b border-white/[0.06]">
+              Menu Navigation
             </div>
             <div className="flex flex-col gap-1">
               {siteConfig.navItems.map((item) => (
@@ -223,15 +220,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     }
                     handleNavClick(item.href);
                   }}
-                  className="min-h-[48px] flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-[#F5F5F7] hover:bg-white/[0.06] hover:text-[#C8FF00] transition-colors"
+                  className="min-h-[46px] flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-[#F5F5F7] hover:bg-white/[0.06] hover:text-[#C8FF00] transition-colors"
                 >
                   <span>{item.name}</span>
-                  <ArrowRight className="h-4 w-4 opacity-40" />
+                  <ArrowRight className="h-3.5 w-3.5 opacity-40" />
                 </a>
               ))}
             </div>
 
-            <div className="pt-3 border-t border-white/[0.08]">
+            <div className="pt-2 border-t border-white/[0.08]">
               <a
                 href="/#contact"
                 onClick={(e) => {
@@ -240,142 +237,104 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   }
                   handleNavClick("/#contact");
                 }}
-                className="btn-lime w-full min-h-[48px] rounded-xl flex items-center justify-center gap-2 text-sm font-bold"
+                className="btn-lime w-full min-h-[46px] rounded-xl flex items-center justify-center gap-2 text-xs font-bold"
               >
-                <span>Request 24h Technical Scope</span>
-                <ArrowRight className="h-4 w-4" />
+                <span>Book a Free Call</span>
+                <ArrowRight className="h-3.5 w-3.5" />
               </a>
             </div>
           </div>
         </div>
       )}
 
-      {/* MAIN CONTENT AREA */}
+      {/* MAIN CONTENT */}
       <main className="flex-grow w-full relative z-10">{children}</main>
 
-      {/* 5-COLUMN EDITORIAL MEGA FOOTER */}
+      {/* 5-COLUMN FOOTER MATCHING REFERENCE 2 (.fgrid) */}
       <footer className="relative z-10 border-t border-white/[0.08] bg-[#0E0E12] pt-20 pb-12 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none opacity-20 dot-matrix" />
-
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-16 border-b border-white/[0.06]">
-            {/* Col 1 & 2: Studio Overview & Direct Contact */}
-            <div className="sm:col-span-2 space-y-5">
-              <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 pb-16 border-b border-white/[0.06]">
+            {/* Col 1: Brand */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
                 <Logo />
-                <img src={wordmark} alt="ZyphorZone" className="h-4 sm:h-5 object-contain" />
-              </Link>
-              <p className="text-sm text-[#9A9AA6] leading-relaxed max-w-md">
-                ZyphorZone operates as a managed senior freelance collective delivering venture-grade full-stack
-                applications, mobile platforms, and high-conversion design systems with transparent milestone pricing.
+                <span className="font-display font-bold text-lg text-[#F5F5F7]">
+                  <span className="text-[#C8FF00]">Zyphor</span>Zone
+                </span>
+              </div>
+              <p className="text-xs text-[#9A9AA6] leading-relaxed">
+                Modern web, mobile and backend solutions from Coimbatore, India.
               </p>
-
-              <div className="flex items-center gap-3 pt-2">
-                <a
-                  href={siteConfig.instagram.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  aria-label="Instagram"
-                  className="h-10 w-10 grid place-items-center rounded-full border border-white/[0.1] bg-white/[0.02] text-[#9A9AA6] hover:text-[#C8FF00] hover:border-[#C8FF00]/40 transition-colors"
-                >
-                  <Instagram className="h-4 w-4" />
-                </a>
-                <a
-                  href={`mailto:${siteConfig.email}`}
-                  aria-label="Email"
-                  className="h-10 w-10 grid place-items-center rounded-full border border-white/[0.1] bg-white/[0.02] text-[#9A9AA6] hover:text-[#C8FF00] hover:border-[#C8FF00]/40 transition-colors"
-                >
-                  <Mail className="h-4 w-4" />
-                </a>
-                <a
-                  href={`tel:${siteConfig.phoneClean}`}
-                  aria-label="Phone"
-                  className="h-10 w-10 grid place-items-center rounded-full border border-white/[0.1] bg-white/[0.02] text-[#9A9AA6] hover:text-[#C8FF00] hover:border-[#C8FF00]/40 transition-colors"
-                >
-                  <Phone className="h-4 w-4" />
-                </a>
-              </div>
-
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C8FF00]/10 border border-[#C8FF00]/20 text-[#C8FF00] text-xs font-mono font-medium">
-                <span className="h-2 w-2 rounded-full bg-[#C8FF00] animate-pulse" />
-                Allocating Q1/Q2 2026 Engineering Sprints
-              </div>
             </div>
 
-            {/* Col 3: Core Capabilities */}
-            <div className="space-y-4">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-[#F5F5F7] flex items-center gap-2">
-                <Briefcase className="h-3.5 w-3.5 text-[#C8FF00]" />
-                Capabilities
-              </h4>
-              <ul className="space-y-2.5 text-xs text-[#9A9AA6]">
-                {siteConfig.services.map((s) => (
-                  <li key={s}>
-                    <a
-                      href="/#services"
-                      className="hover:text-[#F5F5F7] transition-colors flex items-center gap-2 group"
-                    >
-                      <span className="h-1 w-1 rounded-full bg-white/20 group-hover:bg-[#C8FF00] transition-colors" />
-                      {s}
-                    </a>
-                  </li>
-                ))}
+            {/* Col 2: Company */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#C8FF00]">Company</h4>
+              <ul className="space-y-2 text-xs text-[#9A9AA6]">
+                <li><a href="/#about" className="hover:text-[#F5F5F7] transition-colors">About</a></li>
+                <li><a href="/#projects" className="hover:text-[#F5F5F7] transition-colors">Work</a></li>
+                <li><a href="/#how" className="hover:text-[#F5F5F7] transition-colors">How We Work</a></li>
+                <li><a href="/#team" className="hover:text-[#F5F5F7] transition-colors">Team</a></li>
+                <li><a href="/#contact" className="hover:text-[#F5F5F7] transition-colors">Contact</a></li>
               </ul>
             </div>
 
-            {/* Col 4: Studio Architecture */}
-            <div className="space-y-4">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-[#F5F5F7] flex items-center gap-2">
-                <Users className="h-3.5 w-3.5 text-[#C8FF00]" />
-                Studio
-              </h4>
-              <ul className="space-y-2.5 text-xs text-[#9A9AA6]">
-                <li><Link to="/about" className="hover:text-[#F5F5F7] transition-colors">Philosophy & Team</Link></li>
-                <li><a href="/#how" className="hover:text-[#F5F5F7] transition-colors">5-Step Process</a></li>
+            {/* Col 3: Services */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#C8FF00]">Services</h4>
+              <ul className="space-y-2 text-xs text-[#9A9AA6]">
+                <li><a href="/#services" className="hover:text-[#F5F5F7] transition-colors">Web Development</a></li>
+                <li><a href="/#services" className="hover:text-[#F5F5F7] transition-colors">Mobile Apps</a></li>
+                <li><a href="/#services" className="hover:text-[#F5F5F7] transition-colors">UI/UX Design</a></li>
+                <li><a href="/#services" className="hover:text-[#F5F5F7] transition-colors">Backend</a></li>
+                <li><a href="/#services" className="hover:text-[#F5F5F7] transition-colors">Cloud & Database</a></li>
+              </ul>
+            </div>
+
+            {/* Col 4: Free Tools */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#C8FF00]">Free Tools</h4>
+              <ul className="space-y-2 text-xs text-[#9A9AA6]">
                 <li><a href="/#estimator" className="hover:text-[#F5F5F7] transition-colors">Scope Estimator</a></li>
-                <li><a href="/#portfolio" className="hover:text-[#F5F5F7] transition-colors">Shipped Releases</a></li>
-                <li><Link to="/contact" className="hover:text-[#F5F5F7] transition-colors">Direct Consultation</Link></li>
+                <li><a href="/#contact" className="hover:text-[#F5F5F7] transition-colors">Free Consultation</a></li>
               </ul>
             </div>
 
-            {/* Col 5: Trust & Governance */}
-            <div className="space-y-4">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-widest text-[#F5F5F7] flex items-center gap-2">
-                <ShieldCheck className="h-3.5 w-3.5 text-[#C8FF00]" />
-                Governance
-              </h4>
-              <ul className="space-y-2.5 text-xs text-[#9A9AA6]">
-                <li><Link to="/terms" className="hover:text-[#F5F5F7] transition-colors">Terms of Service</Link></li>
-                <li><Link to="/privacy" className="hover:text-[#F5F5F7] transition-colors">Privacy Policy</Link></li>
-                <li className="pt-2 border-t border-white/[0.06] text-[#F5F5F7] flex items-start gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-[#C8FF00] shrink-0 mt-0.5" />
-                  <span>{siteConfig.location}</span>
+            {/* Col 5: Contact */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#C8FF00]">Contact</h4>
+              <ul className="space-y-2 text-xs text-[#9A9AA6]">
+                <li>
+                  <a href={`mailto:${siteConfig.email}`} className="hover:text-[#F5F5F7] transition-colors break-all">
+                    {siteConfig.email}
+                  </a>
+                </li>
+                <li>
+                  <a href={`tel:${siteConfig.phoneClean}`} className="hover:text-[#F5F5F7] transition-colors">
+                    {siteConfig.phone}
+                  </a>
+                </li>
+                <li><p>{siteConfig.location}</p></li>
+                <li className="pt-2 border-t border-white/[0.06]">
+                  <Link to="/privacy" className="hover:text-[#F5F5F7] transition-colors">Privacy Policy</Link>
+                </li>
+                <li>
+                  <Link to="/terms" className="hover:text-[#F5F5F7] transition-colors">Terms & Conditions</Link>
                 </li>
               </ul>
             </div>
           </div>
 
           {/* Mega Wordmark Watermark */}
-          <div className="pt-12 pb-6 text-center select-none overflow-hidden">
-            <span className="text-[clamp(2.5rem,11vw,9rem)] font-extrabold tracking-tighter text-white/[0.03] uppercase font-display leading-none block whitespace-nowrap pointer-events-none">
-              ZYPHORZONE
+          <div className="pt-10 pb-4 text-center select-none overflow-hidden">
+            <span className="text-[clamp(3rem,14vw,11rem)] font-extrabold tracking-tighter text-white/[0.03] uppercase font-display leading-none block whitespace-nowrap pointer-events-none">
+              ZyphorZone
             </span>
           </div>
 
-          {/* Bottom Copyright & Guarantee Strip */}
-          <div className="pt-6 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#9A9AA6]">
-            <div>
-              © {new Date().getFullYear()} ZyphorZone. All rights reserved. Innovate • Build • Elevate.
-            </div>
-            <div className="flex items-center gap-6">
-              <span className="inline-flex items-center gap-1.5 text-[#F5F5F7]">
-                <ShieldCheck className="h-4 w-4 text-[#C8FF00]" />
-                100% IP & Git Handover Guaranteed
-              </span>
-              <span className="hidden md:inline border-l border-white/[0.1] pl-6 text-[#9A9AA6]">
-                Senior Architects & Engineers Only.
-              </span>
-            </div>
+          {/* Bottom Copyright */}
+          <div className="text-center text-xs text-[#9A9AA6]">
+            © {new Date().getFullYear()} ZyphorZone. All rights reserved.
           </div>
         </div>
       </footer>
