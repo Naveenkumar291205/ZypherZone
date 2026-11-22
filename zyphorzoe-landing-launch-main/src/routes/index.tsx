@@ -198,32 +198,7 @@ function LandingPage() {
             </button>
           </div>
 
-          {/* Code Terminal Mockup in Hero */}
-          <div className="pt-8 max-w-2xl mx-auto">
-            <div className="card-editorial p-4 sm:p-5 rounded-2xl text-left font-mono text-xs text-[#9A9AA6] space-y-2 border-white/[0.1] shadow-2xl bg-[#0E0E12]/90 backdrop-blur-xl">
-              <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-                <div className="flex gap-1.5">
-                  <span className="h-2.5 w-2.5 rounded-full bg-rose-500/70" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70" />
-                </div>
-                <span className="text-[11px] text-[#C8FF00]">zyphorzone-runtime v2.6</span>
-              </div>
-              <div className="text-slate-300">
-                <span className="text-[#C8FF00]">const</span> studio = <span className="text-white">new ZyphorZone</span>({"{"}
-              </div>
-              <div className="pl-4 text-[#9A9AA6]">
-                location: <span className="text-[#C8FF00]">"Coimbatore, India"</span>,
-              </div>
-              <div className="pl-4 text-[#9A9AA6]">
-                stack: [<span className="text-white">"React 19"</span>, <span className="text-white">"Supabase"</span>, <span className="text-white">"TypeScript"</span>, <span className="text-white">"Node.js"</span>],
-              </div>
-              <div className="pl-4 text-[#9A9AA6]">
-                guarantee: <span className="text-[#C8FF00]">"100% IP Handover + 24h Scope Delivery"</span>
-              </div>
-              <div className="text-slate-300">{"}"});</div>
-            </div>
-          </div>
+
         </div>
       </section>
 
