@@ -333,77 +333,7 @@ function LandingPage() {
             })}
           </div>
 
-          {/* Market Comparison Matrix */}
-          <div className="card-editorial p-6 sm:p-8 rounded-3xl overflow-hidden mt-12">
-            <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-4">
-              <div>
-                <h3 className="text-xl font-bold font-display text-[#F5F5F7]">Capability & Standards Comparison</h3>
-                <p className="text-xs text-[#9A9AA6] font-mono mt-0.5">
-                  How our managed model compares to traditional alternatives
-                </p>
-              </div>
-              <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-[#C8FF00]/10 border border-[#C8FF00]/30 text-[#C8FF00]">
-                100% Client Protected
-              </span>
-            </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-white/[0.08] text-xs font-mono uppercase tracking-wider text-[#9A9AA6]">
-                    <th className="py-4 pr-6">Operational Vector</th>
-                    <th className="py-4 px-6 text-[#C8FF00] bg-[#C8FF00]/[0.05] rounded-t-xl font-bold">
-                      ZyphorZone
-                    </th>
-                    <th className="py-4 px-6">Traditional Agency</th>
-                    <th className="py-4 pl-6">Open Marketplaces</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.06]">
-                  {[
-                    {
-                      v: "Talent Assigned",
-                      zz: "100% Vetted Senior Engineers",
-                      ag: "Seniors pitch, juniors execute",
-                      fr: "Hit-or-miss anonymous bids",
-                    },
-                    {
-                      v: "Pricing Model",
-                      zz: "Fixed flat milestones, 0 surprise markups",
-                      ag: "Huge retainer markups ($20k+)",
-                      fr: "Erratic hourly padding",
-                    },
-                    {
-                      v: "Code & IP Handover",
-                      zz: "100% Git rights & full legal handover",
-                      ag: "Proprietary lock-ins",
-                      fr: "Unclear copyright clauses",
-                    },
-                    {
-                      v: "Initial Technical Scope",
-                      zz: "Guaranteed architectural scope in 24h",
-                      ag: "2–4 weeks of discovery workshops",
-                      fr: "Vague, delayed proposals",
-                    },
-                  ].map((row, i) => (
-                    <tr key={i} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="py-4 pr-6 font-semibold text-[#F5F5F7] font-display text-xs sm:text-sm">
-                        {row.v}
-                      </td>
-                      <td className="py-4 px-6 font-medium text-[#F5F5F7] bg-[#C8FF00]/[0.03] border-x border-[#C8FF00]/10">
-                        <div className="flex items-center gap-2 text-xs sm:text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-[#C8FF00] shrink-0" />
-                          <span>{row.zz}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6 text-xs text-[#9A9AA6]">{row.ag}</td>
-                      <td className="py-4 pl-6 text-xs text-[#9A9AA6]">{row.fr}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </section>
 
