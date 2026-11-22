@@ -15,6 +15,9 @@ import {
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { useLenisControl } from "./SmoothScrollProvider";
+import { Preloader } from "./Preloader";
+import { CustomCursor } from "./CustomCursor";
+import { MagneticButton } from "./MagneticButton";
 
 export function Logo({ className = "h-7 w-7 md:h-8 md:w-8" }: { className?: string }) {
   return (
@@ -101,6 +104,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="relative min-h-screen flex flex-col bg-[#09090B] text-[#F5F5F7] selection:bg-[#C8FF00] selection:text-[#09090B]">
+      {/* Flagship Cinema Curtain Preloader */}
+      <Preloader />
+
+      {/* Flagship Contextual Custom Cursor */}
+      <CustomCursor />
+
       {/* 2px Scroll Progress Bar */}
       <div className="fixed top-0 left-0 right-0 h-[2px] z-[100] pointer-events-none bg-white/[0.04]">
         <div
@@ -158,7 +167,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* Right Action Button & Mobile Toggle */}
           <div className="flex items-center gap-2">
-            <a
+            <MagneticButton
               href="/#contact"
               onClick={(e) => {
                 if (window.location.pathname === "/") {
@@ -166,11 +175,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   handleNavClick("/#contact");
                 }
               }}
-              className="btn-lime text-xs font-bold !py-2 !px-4 sm:!py-2.5 sm:!px-5 rounded-full inline-flex items-center gap-1.5"
+              className="text-xs font-bold !py-2 !px-4 sm:!py-2.5 sm:!px-5 rounded-full"
+              icon={<ArrowRight className="h-3 w-3" />}
             >
-              <span>Book a Call</span>
-              <ArrowRight className="h-3 w-3" />
-            </a>
+              Book a Call
+            </MagneticButton>
 
             {/* Animated 2-line Hamburger (<= 920px) */}
             <button
@@ -248,10 +257,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       )}
 
       {/* MAIN CONTENT */}
-      <main className="flex-grow w-full relative z-10">{children}</main>
+      <main className="flex-grow w-full relative z-10 uncover-main">{children}</main>
 
-      {/* 5-COLUMN FOOTER MATCHING REFERENCE 2 (.fgrid) */}
-      <footer className="relative z-10 border-t border-white/[0.08] bg-[#0E0E12] pt-20 pb-12 overflow-hidden">
+      {/* 5-COLUMN FOOTER MATCHING REFERENCE 2 (.fgrid) WITH STICKY UNCOVER */}
+      <footer className="relative z-10 border-t border-white/[0.08] bg-[#0E0E12] pt-20 pb-12 overflow-hidden uncover-footer">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 pb-16 border-b border-white/[0.06]">
             {/* Col 1: Brand */}

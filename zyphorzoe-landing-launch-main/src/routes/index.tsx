@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 import {
   ArrowRight,
   Code2,
@@ -26,6 +27,8 @@ import {
 import { siteConfig } from "@/config/site";
 import { InquiryForm } from "@/components/InquiryForm";
 import { useLenisControl } from "@/components/SmoothScrollProvider";
+import { ScrollRevealText } from "@/components/ScrollRevealText";
+import { MagneticButton } from "@/components/MagneticButton";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -42,7 +45,94 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
-  const { scrollTo } = useLenisControl();
+  const { lenis, scrollTo, isReducedMotion } = useLenisControl();
+
+  // Hero Headline Mask Reveal on load / preloader completion
+  const [heroRevealed, setHeroRevealed] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (sessionStorage.getItem("zz_loaded") === "1" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setHeroRevealed(true);
+    }
+    const onDone = () => setHeroRevealed(true);
+    window.addEventListener("zz_preloader_done", onDone);
+    const timer = setTimeout(() => setHeroRevealed(true), 1200);
+    return () => {
+      window.removeEventListener("zz_preloader_done", onDone);
+      clearTimeout(timer);
+    };
+  }, []);
+
+  // Lenis Scroll-Velocity Physics: Kinetic Marquee + Project Media Skew
+  const [velocitySkew, setVelocitySkew] = useState(0);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const marqueeOffset = useRef(0);
+  const velocityRef = useRef(0);
+
+  useEffect(() => {
+    if (!lenis || isReducedMotion) return;
+
+    const onScroll = ({ velocity }: { velocity: number }) => {
+      velocityRef.current = velocity;
+      const clampedSkew = Math.max(-2.2, Math.min(2.2, velocity * 0.06));
+      setVelocitySkew(clampedSkew);
+    };
+
+    lenis.on("scroll", onScroll);
+
+    let rafId: number;
+    const animateMarquee = () => {
+      // Idle gliding speed = 0.85px/frame; scroll down accelerates forward; scroll up reverses
+      const speed = 0.85 + Math.max(-10, Math.min(10, velocityRef.current * 0.16));
+      marqueeOffset.current -= speed;
+
+      // Dampen velocity smoothly back to 0
+      velocityRef.current *= 0.92;
+      if (Math.abs(velocityRef.current) < 0.01) {
+        velocityRef.current = 0;
+        setVelocitySkew(0);
+      } else {
+        const clampedSkew = Math.max(-2.2, Math.min(2.2, velocityRef.current * 0.06));
+        setVelocitySkew(clampedSkew);
+      }
+
+      if (marqueeRef.current) {
+        const halfWidth = marqueeRef.current.scrollWidth / 2;
+        if (halfWidth > 0) {
+          if (marqueeOffset.current <= -halfWidth) {
+            marqueeOffset.current += halfWidth;
+          } else if (marqueeOffset.current > 0) {
+            marqueeOffset.current -= halfWidth;
+          }
+          marqueeRef.current.style.transform = `translate3d(${marqueeOffset.current}px, 0, 0)`;
+        }
+      }
+
+      rafId = requestAnimationFrame(animateMarquee);
+    };
+
+    rafId = requestAnimationFrame(animateMarquee);
+
+    return () => {
+      lenis.off("scroll", onScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, [lenis, isReducedMotion]);
+
+  // Linear-Style 3D Perspective Un-Tilt for Aether Showcase
+  const showcaseRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: showcaseProgress } = useScroll({
+    target: showcaseRef,
+    offset: ["start end", "center center"],
+  });
+
+  const rotateX = useTransform(showcaseProgress, [0, 1], [9, 0]);
+  const showcaseScale = useTransform(showcaseProgress, [0, 1], [0.94, 1.0]);
+  const showcaseClip = useTransform(
+    showcaseProgress,
+    [0, 1],
+    ["inset(5% 3% round 22px)", "inset(0% 0% round 22px)"]
+  );
 
   // Scope Estimator State matching Reference 2
   const [currency, setCurrency] = useState<"USD" | "INR">("USD");
@@ -167,11 +257,27 @@ function LandingPage() {
             <span className="text-[#F5F5F7] font-medium">Technology company · Coimbatore, India</span>
           </div>
 
-          {/* Main H1 Headline */}
+          {/* Main H1 Headline with 1.1s Mask Reveal */}
           <h1 className="text-[clamp(2.5rem,6.8vw,5.6rem)] font-extrabold tracking-[-0.035em] text-[#F5F5F7] font-display leading-[1.08] max-w-4xl mx-auto">
-            Building Digital Experiences That{" "}
-            <span className="text-[#C8FF00] drop-shadow-[0_0_35px_rgba(200,255,0,0.35)]">
-              Move Businesses Forward.
+            <span className="block overflow-hidden pb-1">
+              <span
+                className="block transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+                style={{
+                  transform: heroRevealed ? "translate3d(0, 0, 0)" : "translate3d(0, 115%, 0)",
+                }}
+              >
+                Building Digital Experiences That
+              </span>
+            </span>
+            <span className="block overflow-hidden pb-1">
+              <span
+                className="block text-[#C8FF00] drop-shadow-[0_0_35px_rgba(200,255,0,0.35)] transition-transform duration-[1100ms] delay-[140ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform"
+                style={{
+                  transform: heroRevealed ? "translate3d(0, 0, 0)" : "translate3d(0, 115%, 0)",
+                }}
+              >
+                Move Businesses Forward.
+              </span>
             </span>
           </h1>
 
@@ -181,49 +287,53 @@ function LandingPage() {
             thinking, and reliable engineering.
           </p>
 
-          {/* CTAs */}
+          {/* CTAs with Magnetic Pill Pull and Dual-Line Roll */}
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <button
+            <MagneticButton
               onClick={() => scrollTo("#contact", { offset: -90 })}
-              className="btn-lime text-sm font-bold shadow-lg"
+              className="text-sm font-bold shadow-lg"
+              icon={<ArrowRight className="h-4 w-4" />}
             >
-              <span>Get Started</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-            <button
+              Get Started
+            </MagneticButton>
+            <MagneticButton
               onClick={() => scrollTo("#projects", { offset: -90 })}
-              className="btn-ghost text-sm font-medium"
+              variant="ghost"
+              className="text-sm font-medium"
             >
-              <span>Explore Our Work</span>
-            </button>
+              Explore Our Work
+            </MagneticButton>
           </div>
-
-
         </div>
       </section>
 
-      {/* ---------------- MARQUEE STRIP ---------------- */}
+      {/* ---------------- KINETIC MARQUEE STRIP (Velocity Modulated) ---------------- */}
       <div className="relative overflow-hidden w-full py-4 border-y border-white/[0.08] bg-[#0A0A0E] mask-radial-edges">
-        <div className="flex animate-marquee gap-8 whitespace-nowrap font-mono text-xs font-semibold tracking-widest text-[#9A9AA6] uppercase">
+        <div
+          ref={marqueeRef}
+          className="flex gap-8 whitespace-nowrap font-mono text-xs font-semibold tracking-widest text-[#9A9AA6] uppercase will-change-transform"
+        >
           {[
-            "React",
+            "React 19",
             "TypeScript",
-            "Tailwind CSS",
+            "Tailwind CSS v4",
             "Supabase",
             "MongoDB",
             "Node.js",
             "React Native",
             "UI/UX Design",
-            "Cloud",
-            "React",
+            "Cloud Infrastructure",
+            "Next-Gen Performance",
+            "React 19",
             "TypeScript",
-            "Tailwind CSS",
+            "Tailwind CSS v4",
             "Supabase",
             "MongoDB",
             "Node.js",
             "React Native",
             "UI/UX Design",
-            "Cloud",
+            "Cloud Infrastructure",
+            "Next-Gen Performance",
           ].map((item, idx) => (
             <span key={`${item}-${idx}`} className="flex items-center gap-3">
               <span className="h-1.5 w-1.5 rounded-full bg-[#C8FF00]" />
@@ -251,6 +361,13 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* ---------------- SCROLL-SCRUBBED MANIFESTO REVEAL ---------------- */}
+      <ScrollRevealText
+        eyebrow="The Philosophy"
+        headline="Engineered For Real Impact"
+        text="You have a business to run. Your technology should help you grow, not hold you back. We build software that works reliably, scales smoothly, and looks exceptional."
+      />
 
       {/* ---------------- SECTION 01: ABOUT ZYPHORZONE (#about) ---------------- */}
       <section id="about" className="py-24 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
@@ -499,9 +616,9 @@ function LandingPage() {
                     ref={(el) => {
                       stepCardsRef.current[idx] = el;
                     }}
-                    className={`card-editorial p-8 rounded-3xl transition-all duration-500 ${
+                    className={`card-editorial pc p-8 rounded-3xl transition-all duration-500 ${
                       isActive
-                        ? "border-[#C8FF00]/50 shadow-[0_0_35px_rgba(200,255,0,0.15)] opacity-100 scale-100"
+                        ? "on border-beam border-[#C8FF00]/50 shadow-[0_0_35px_rgba(200,255,0,0.15)] opacity-100 scale-100"
                         : "opacity-40 scale-[0.98] border-white/[0.06]"
                     }`}
                   >
@@ -632,8 +749,8 @@ function LandingPage() {
             </div>
           </div>
 
-          {/* Right Summary Card */}
-          <div className="lg:col-span-5 card-editorial p-6 sm:p-8 rounded-3xl flex flex-col justify-between border-[#C8FF00]/30 shadow-2xl">
+          {/* Right Summary Card with Conic Border Beam */}
+          <div className="lg:col-span-5 card-editorial est-out border-beam p-6 sm:p-8 rounded-3xl flex flex-col justify-between border-[#C8FF00]/30 shadow-2xl">
             <div className="space-y-4">
               <span className="text-xs font-mono uppercase tracking-wider text-[#C8FF00] font-bold">
                 Estimated Cost
@@ -648,18 +765,127 @@ function LandingPage() {
             </div>
 
             <div className="pt-8 space-y-3">
-              <button
+              <MagneticButton
                 type="button"
                 onClick={handleUseEstimate}
-                className="btn-lime w-full min-h-[48px] text-sm font-bold shadow-lg"
+                className="w-full min-h-[48px] text-sm font-bold shadow-lg"
               >
                 Use in enquiry
-              </button>
+              </MagneticButton>
               <p className="text-[11px] font-mono text-[#9A9AA6] leading-relaxed">
                 Estimate only, not a quote. INR uses an approximate conversion rate of ₹83 per $1.
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ---------------- SECTION: FLAGSHIP 3D PERSPECTIVE SHOWCASE (#showcase) ---------------- */}
+      <section id="showcase" className="py-24 relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
+        <div className="space-y-4 max-w-3xl">
+          <div className="text-xs font-mono uppercase tracking-[0.2em] text-[#C8FF00] font-semibold">
+            Featured Flagship Build
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-display tracking-tight text-[#F5F5F7]">
+            Aether SaaS <span className="text-[#C8FF00]">Analytics Platform</span>
+          </h2>
+          <p className="text-[#9A9AA6] text-base sm:text-lg">
+            A production telemetry platform designed for high-velocity software teams. Observe real-time customer usage, MRR growth, and API health across regions in one unified cockpit.
+          </p>
+        </div>
+
+        {/* 3D Perspective Browser Frame with Linear-Style Un-Tilt */}
+        <div ref={showcaseRef} className="perspective-1200 w-full">
+          <motion.div
+            style={{
+              rotateX: isReducedMotion ? 0 : rotateX,
+              scale: isReducedMotion ? 1 : showcaseScale,
+              clipPath: isReducedMotion ? undefined : showcaseClip,
+              transformStyle: "preserve-3d",
+            }}
+            data-cursor="Explore"
+            className="bro card-editorial rounded-3xl border border-white/[0.12] bg-[#0C0C10] shadow-[0_30px_90px_rgba(0,0,0,0.85)] overflow-hidden transition-shadow duration-300 hover:shadow-[0_40px_120px_rgba(200,255,0,0.12)] group"
+          >
+            {/* Top Browser Chrome Bar */}
+            <div className="px-5 py-3.5 border-b border-white/[0.08] bg-[#0E0E14] flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="h-3 w-3 rounded-full bg-[#FF5F56]/80" />
+                <span className="h-3 w-3 rounded-full bg-[#FFBD2E]/80" />
+                <span className="h-3 w-3 rounded-full bg-[#27C93F]/80" />
+              </div>
+              <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-white/[0.04] border border-white/[0.06] text-[11px] font-mono text-[#9A9AA6]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#C8FF00]" />
+                <span>zyphorzone.dev/aether-analytics</span>
+              </div>
+              <div className="text-[11px] font-mono text-[#C8FF00] font-bold">
+                Live Preview
+              </div>
+            </div>
+
+            {/* Dashboard Mockup Content */}
+            <div className="p-6 sm:p-8 space-y-6">
+              {/* Header inside dashboard */}
+              <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/[0.06]">
+                <div>
+                  <h3 className="font-display font-bold text-xl text-[#F5F5F7]">Executive Overview</h3>
+                  <p className="text-xs text-[#9A9AA6] font-mono">Real-time revenue & churn tracking · Q4 Fiscal</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 rounded-lg text-xs font-mono bg-[#C8FF00]/10 border border-[#C8FF00]/30 text-[#C8FF00]">
+                    ● Live Feed
+                  </span>
+                  <span className="px-3 py-1 rounded-lg text-xs font-mono bg-white/[0.04] text-[#9A9AA6]">
+                    Last 30 Days
+                  </span>
+                </div>
+              </div>
+
+              {/* 4 Metric KPI Cards */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+                  <div className="text-xs font-mono text-[#9A9AA6]">Annual Run Rate</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold font-display text-[#C8FF00] mt-1 tabular-nums">$148,200</div>
+                  <div className="text-[11px] font-mono text-emerald-400 mt-1">↑ +24.6% vs last month</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+                  <div className="text-xs font-mono text-[#9A9AA6]">Active Organizations</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold font-display text-[#F5F5F7] mt-1 tabular-nums">2,840</div>
+                  <div className="text-[11px] font-mono text-emerald-400 mt-1">↑ +142 this week</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+                  <div className="text-xs font-mono text-[#9A9AA6]">Platform Uptime</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold font-display text-[#C8FF00] mt-1 tabular-nums">99.98%</div>
+                  <div className="text-[11px] font-mono text-[#9A9AA6] mt-1">Zero critical outages</div>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+                  <div className="text-xs font-mono text-[#9A9AA6]">P99 Edge Latency</div>
+                  <div className="text-2xl sm:text-3xl font-extrabold font-display text-[#F5F5F7] mt-1 tabular-nums">14.2ms</div>
+                  <div className="text-[11px] font-mono text-emerald-400 mt-1">Multi-region routed</div>
+                </div>
+              </div>
+
+              {/* SVG / CSS Chart Area */}
+              <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-4">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-[#F5F5F7] font-semibold">ARR Growth Trajectory</span>
+                  <span className="text-[#C8FF00]">$12.4k avg / sprint</span>
+                </div>
+                <div className="h-32 sm:h-44 w-full flex items-end gap-2 sm:gap-3 pt-6">
+                  {[35, 42, 48, 55, 62, 58, 68, 75, 82, 88, 94, 100].map((val, idx) => (
+                    <div key={idx} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group/bar">
+                      <div
+                        className="w-full rounded-t-md bg-gradient-to-t from-[#C8FF00]/20 to-[#C8FF00] transition-all duration-300 group-hover/bar:brightness-125"
+                        style={{ height: `${val}%` }}
+                      />
+                      <span className="text-[9px] font-mono text-[#9A9AA6]">
+                        {["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"][idx]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -700,8 +926,14 @@ function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {filteredProjects.map((p) => (
               <div key={p.title} className="card-editorial p-6 sm:p-8 rounded-3xl space-y-5 group">
-                {/* Thumb Banner */}
-                <div className="h-44 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#181824] to-[#101018] grid place-items-center font-display font-bold text-lg sm:text-xl text-[#F5F5F7] group-hover:border-[#C8FF00]/40 transition-colors">
+                {/* Thumb Banner with velocity skew and data-cursor */}
+                <div
+                  data-cursor="View"
+                  className="proj-media h-44 rounded-2xl border border-white/[0.08] bg-gradient-to-br from-[#181824] to-[#101018] grid place-items-center font-display font-bold text-lg sm:text-xl text-[#F5F5F7] group-hover:border-[#C8FF00]/40 transition-colors will-change-transform"
+                  style={{
+                    transform: !isReducedMotion && velocitySkew !== 0 ? `skewY(${velocitySkew}deg)` : undefined,
+                  }}
+                >
                   {p.title}
                 </div>
 
@@ -820,19 +1052,20 @@ function LandingPage() {
             <span className="text-[#C8FF00]">Let’s talk about your project.</span>
           </h2>
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-            <button
+            <MagneticButton
               onClick={() => scrollTo("#contact", { offset: -90 })}
-              className="btn-lime text-sm font-bold shadow-lg"
+              className="text-sm font-bold shadow-lg"
+              icon={<ArrowRight className="h-4 w-4" />}
             >
-              <span>Book a Free Call</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-            <button
+              Book a Free Call
+            </MagneticButton>
+            <MagneticButton
               onClick={() => scrollTo("#estimator", { offset: -90 })}
-              className="btn-ghost text-sm font-medium"
+              variant="ghost"
+              className="text-sm font-medium"
             >
-              <span>Get a rough estimate</span>
-            </button>
+              Get a rough estimate
+            </MagneticButton>
           </div>
         </div>
       </section>

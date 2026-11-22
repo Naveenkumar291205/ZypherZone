@@ -4,6 +4,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -92,7 +98,6 @@
   html {
     background-color: var(--color-background);
     color-scheme: dark;
-    /* Do not set overflow-x: hidden on html or body to keep position: sticky working seamlessly with Lenis */
   }
   body {
     background-color: var(--color-background);
@@ -132,7 +137,7 @@
   display: inline-block;
 }
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons & Dual-Line Text Roll ---------- */
 
 @utility btn-lime {
   display: inline-flex;
@@ -155,7 +160,6 @@
   overflow: hidden;
 
   &:hover {
-    transform: translateY(-2px);
     background: #DCFF5C;
     box-shadow:
       0 8px 30px -4px rgba(200, 255, 0, 0.5),
@@ -163,7 +167,7 @@
     filter: brightness(1.05);
   }
   &:active {
-    transform: translateY(0) scale(0.98);
+    transform: scale(0.98);
   }
   &:focus-visible {
     outline: 2px solid #C8FF00;
@@ -193,7 +197,6 @@
     border-color: rgba(200, 255, 0, 0.4);
     background: rgba(200, 255, 0, 0.06);
     color: #FFFFFF;
-    transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(200, 255, 0, 0.15);
   }
   &:active {
@@ -202,6 +205,80 @@
   &:focus-visible {
     outline: 2px solid #C8FF00;
     outline-offset: 3px;
+  }
+}
+
+/* Dual-line Roll Text */
+.btn-roll {
+  display: inline-block;
+  overflow: hidden;
+  height: 1.25em;
+  line-height: 1.25em;
+  vertical-align: middle;
+}
+
+.btn-roll-inner {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.group:hover .btn-roll-inner,
+button:hover .btn-roll-inner,
+a:hover .btn-roll-inner {
+  transform: translateY(-50%);
+}
+
+/* ---------- Conic Border Beam Animation ---------- */
+
+@keyframes beamRotate {
+  0% {
+    --beam-angle: 0deg;
+  }
+  100% {
+    --beam-angle: 360deg;
+  }
+}
+
+.border-beam {
+  position: relative;
+}
+
+.border-beam::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--beam-angle), transparent 72%, rgba(200, 255, 0, 0.75) 88%, transparent 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: beamRotate 5s linear infinite;
+  z-index: 2;
+}
+
+/* ---------- 3D Perspective ---------- */
+
+.perspective-1200 {
+  perspective: 1200px;
+}
+
+/* ---------- Sticky Curtain Uncover Footer ---------- */
+
+@media (min-width: 1024px) {
+  .uncover-main {
+    position: relative;
+    z-index: 10;
+    background: #09090B;
+    border-radius: 0 0 36px 36px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85);
+  }
+  .uncover-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
   }
 }
 
@@ -334,5 +411,9 @@
   }
   .animate-marquee {
     animation: none !important;
+  }
+  .border-beam::before {
+    animation: none !important;
+    background: rgba(200, 255, 0, 0.4) !important;
   }
 }
