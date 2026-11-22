@@ -15,17 +15,3 @@ export const saveEnquiry = createServerFn({ method: "POST" })
     const { saveEnquiryToServer } = await import("./mongodb.server");
     return saveEnquiryToServer(data);
   });
-
-// Server Function for Help Request Form
-export const saveHelpRequest = createServerFn({ method: "POST" })
-  .validator((data: {
-    name: string;
-    email: string;
-    topic: string;
-    message: string;
-  }) => data)
-  .handler(async ({ data }) => {
-    // Dynamically import server-side helper only during server-side handler execution
-    const { saveHelpRequestToServer } = await import("./mongodb.server");
-    return saveHelpRequestToServer(data);
-  });

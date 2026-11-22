@@ -10,7 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+
 import Layout from "../components/Layout";
 
 function NotFoundComponent() {
@@ -39,7 +39,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    // Log error to console for debugging
+    console.error("[Root Error Boundary]", error);
   }, [error]);
 
   return (
@@ -78,14 +79,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "ZyphorZone — Innovate • Build • Elevate" },
+      { name: "description", content: "ZyphorZone builds high-performance websites, mobile apps, and digital experiences. Innovate • Build • Elevate." },
+      { name: "author", content: "ZyphorZone" },
+      { property: "og:title", content: "ZyphorZone — Innovate • Build • Elevate" },
+      { property: "og:description", content: "ZyphorZone builds high-performance websites, mobile apps, and digital experiences. Innovate • Build • Elevate." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:site", content: "@_zyphor.dev_" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -105,10 +106,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "ZyphorZone",
+    "slogan": "Innovate • Build • Elevate",
+    "description": "Senior managed freelance collective delivering web engineering, mobile apps, UI/UX, and performance marketing.",
+    "url": "https://zyphorzone.com",
+    "email": "Zypherzone07@gmail.com",
+    "telephone": "+916385235131",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Coimbatore",
+      "addressRegion": "Tamil Nadu",
+      "addressCountry": "India"
+    },
+    "sameAs": [
+      "https://instagram.com/_zyphor.dev_"
+    ]
+  };
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body>
         {children}

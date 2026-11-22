@@ -5,7 +5,7 @@ export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
       { title: "Terms of Service — ZyphorZone" },
-      { name: "description", content: "The terms that govern use of ZyphorZone's website and services." },
+      { name: "description", content: "The terms that govern use of ZyphorZone's website and services. Innovate • Build • Elevate." },
       { property: "og:title", content: "Terms of Service — ZyphorZone" },
       { property: "og:description", content: "ZyphorZone terms of service." },
       { name: "robots", content: "index,follow" },

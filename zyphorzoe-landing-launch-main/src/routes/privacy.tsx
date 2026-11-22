@@ -5,7 +5,7 @@ export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
       { title: "Privacy Policy — ZyphorZone" },
-      { name: "description", content: "How ZyphorZone collects, uses and protects your personal information." },
+      { name: "description", content: "How ZyphorZone collects, uses and protects your personal information. Innovate • Build • Elevate." },
       { property: "og:title", content: "Privacy Policy — ZyphorZone" },
       { property: "og:description", content: "ZyphorZone privacy policy." },
     ],
